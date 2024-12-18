@@ -6,7 +6,7 @@ import javafx.scene.shape.Rectangle;
 
 public class WallModel extends Rectangle {
     public WallModel() {
-        Image runwayImage = new Image(getClass().getResource("/image/Santa.png").toExternalForm());
+        Image runwayImage = new Image(getClass().getResource("/image/christmasImage.png").toExternalForm());
         ImagePattern runwayPattern = new ImagePattern(runwayImage);
         this.setWidth(1600/ 2.0);
         this.setHeight(1200 / 2.0);

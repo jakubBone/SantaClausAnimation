@@ -2,6 +2,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.Group;
 import javafx.util.Duration;
+import model.SantaModel;
 import model.SnowModel;
 import model.WallModel;
 
@@ -12,6 +13,8 @@ import java.util.Random;
 public class SnowService {
     private Group staticGroup;
     private Group dynamicGroup;
+    private SantaModel santaModel;
+    private WallModel wallModel;
 
     public SnowService(Group staticGroup, Group dynamicGroup) {
         this.staticGroup = staticGroup;
@@ -20,14 +23,34 @@ public class SnowService {
 
     public void initializeScene() {
         addBackgroundWall();
+        addSanta();
         startAnimation();
     }
 
     private void startAnimation() {
         List<SnowModel> snowflakes = createSnowflakes();
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(50), event -> updateSnowflakes(snowflakes)));
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(50), event -> updateSnow(snowflakes)));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
+
+        Timeline timeline1 = new Timeline(new KeyFrame(Duration.millis(1000), event -> updateSantaMovement()));
+        timeline1.setCycleCount(Timeline.INDEFINITE);
+        timeline1.play();
+    }
+
+    private void updateSnow(List<SnowModel> snowflakes) {
+        Random random = new Random();
+        for (SnowModel snowflake : snowflakes) {
+            snowflake.setTranslateY(snowflake.getTranslateY() + 5); // Falling
+            if (snowflake.getTranslateY() > 300) { // Reset at bottom
+                resetSnowflakesPosition(snowflake, random);
+            }
+        }
+        createSnowLayer();
+    }
+
+    private void updateSantaMovement() {
+        santaModel.animateMovement();
     }
 
     private List<SnowModel> createSnowflakes() {
@@ -46,17 +69,6 @@ public class SnowService {
         snowModel.setTranslateX(random.nextDouble() *  800 - 800 / 2.0);
         snowModel.setTranslateY(random.nextDouble() * - 600);
         snowModel.setTranslateZ(random.nextDouble() * 600 - 600 / 2.0);
-    }
-
-    private void updateSnowflakes(List<SnowModel> snowflakes) {
-        Random random = new Random();
-        for (SnowModel snowflake : snowflakes) {
-            snowflake.setTranslateY(snowflake.getTranslateY() + 5); // Falling
-            if (snowflake.getTranslateY() > 300) { // Reset at bottom
-                resetSnowflakesPosition(snowflake, random);
-            }
-        }
-        createSnowLayer();
     }
 
     private void createSnowLayer() {
@@ -81,10 +93,14 @@ public class SnowService {
         snowflake.setTranslateX(random.nextDouble() * 800 - 400);
         snowflake.setTranslateZ(random.nextDouble() * 600 - 300);
     }
-
     private void addBackgroundWall() {
-        WallModel wallModel = new WallModel();
+        this.wallModel = new WallModel();
         staticGroup.getChildren().add(wallModel);
+    }
+
+    private void addSanta() {
+        this.santaModel = new SantaModel();
+        staticGroup.getChildren().add(santaModel);
     }
 
     public Group getDynamicGroup() {
